@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ public class Block : MonoBehaviour
     public int m_HP;
     public int m_MaxHP = 1;
 
-    public Text m_HPText;
+    public TextMeshProUGUI m_HPText;
     public Animator m_Animator;
     public SpriteRenderer m_Sprite;
     public ParticleSystem m_BreakParticle;

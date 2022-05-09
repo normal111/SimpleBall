@@ -3,14 +3,14 @@ name: Build project
 on: [push, pull_request]
 
 jobs:
-  buildForAllSupportedPlatforms:
+  buildForAndroidPlatform:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         targetPlatform:
-          - Android # Build an Android .apk standalone app.
+          - Android
     steps:
       - uses: actions/checkout@v2
         with:
@@ -32,7 +32,33 @@ jobs:
           androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
           androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS }}
           androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS }}
+          customParameters: -BuildOptions CompressWithLz4
+
       - uses: actions/upload-artifact@v2
         with:
-          name: Build-${{ matrix.targetPlatform }}
+          name: build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
+  
+  releaseToGooglePlay:
+    name: Release to the Google Play Store
+    runs-on: ubuntu-latest
+    needs: buildForAndroidPlatform
+      
+    steps:
+      - name: Download Android Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build-Android
+          path: build/Android
+
+      - name: Create service_account.json
+        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+
+      - name: Deploy to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: service_account.json
+          packageName: com.Normals.SimpleBall
+          releaseFiles: build/Android/Android.aab
+          track: internal
+          status: completed
