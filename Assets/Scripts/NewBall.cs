@@ -9,6 +9,7 @@ public class NewBall : MonoBehaviour
     public GameManager m_GameManager;
     public Animator m_Animator;
     public ParticleSystem m_GetParticle;
+    public AudioSource m_GetSound;
 
     private void OnEnable()
     {
@@ -25,11 +26,12 @@ public class NewBall : MonoBehaviour
 
     public void HitBall()
     {
+        m_GetSound.Play();
         m_GetParticle.Play();
         m_Collider2D.enabled = false;
         m_Animator.SetTrigger("Hit");
         m_GameManager.AddFalledNewBall(this);
-        StartCoroutine(MoveTo(new Vector2(this.transform.position.x, m_GameManager.m_BallController.m_LauchPosition.y)));
+        StartCoroutine(MoveTo(new Vector2(this.transform.position.x, m_GameManager.m_BallController.m_ShootingPosition.y)));
     }
 
     // ¹Ù´Ú¿¡ ¶³¾îÁö±â

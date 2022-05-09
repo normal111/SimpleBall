@@ -4,27 +4,46 @@ using UnityEngine;
 
 public class BlockPoolingManager : MonoBehaviour
 {
-    public GameObject[] m_SquareBlocks;
-    public GameObject[] m_CircleBlocks;
-    public GameObject[] m_LeftTriangleBlocks;
-    public GameObject[] m_RightTriangleBlocks;
+    public int m_PoolingCount = 42;
+    public GameObject m_SquareBlockPrefab;
+    public GameObject m_LeftTriangleBlockPrefab;
+    public GameObject m_RightTriangleBlockPrefab;
+    public GameObject m_EllipseBlockPrefab;
+
+    private Block[] m_SquareBlocks;
+    private Block[] m_LeftTriangleBlocks;
+    private Block[] m_RightTriangleBlocks;
+    private Block[] m_EllipseBlocks;
 
     private int m_SquareIndex;
-    private int m_CircleIndex;
     private int m_LeftTriangleIndex;
     private int m_RightTriangleIndex;
+    private int m_EllipseIndex;
 
     void Awake()
     {
+        m_SquareBlocks = new Block[m_PoolingCount];
+        m_LeftTriangleBlocks = new Block[m_PoolingCount];
+        m_RightTriangleBlocks = new Block[m_PoolingCount];
+        m_EllipseBlocks = new Block[m_PoolingCount];
+
+        for (int i = 0; i < m_PoolingCount; i++)
+        {
+            m_SquareBlocks[i] = Instantiate(m_SquareBlockPrefab, this.transform).GetComponent<Block>();
+            m_LeftTriangleBlocks[i] = Instantiate(m_LeftTriangleBlockPrefab, this.transform).GetComponent<Block>();
+            m_RightTriangleBlocks[i] = Instantiate(m_RightTriangleBlockPrefab, this.transform).GetComponent<Block>();
+            m_EllipseBlocks[i] = Instantiate(m_EllipseBlockPrefab, this.transform).GetComponent<Block>();
+        }
+
         m_SquareIndex = 0;
-        m_CircleIndex = 0;
         m_LeftTriangleIndex = 0;
         m_RightTriangleIndex = 0;
+        m_EllipseIndex = 0;
     }
 
-    public List<GameObject> GetBlocks(int count)
+    public List<Block> GetBlocks(int count)
     {
-        List<GameObject> blockList = new List<GameObject>();
+        List<Block> blockList = new List<Block>();
         for (int i = 0; i < count; i++)
         {
             int seed = Random.Range(0, 10);
@@ -40,22 +59,54 @@ public class BlockPoolingManager : MonoBehaviour
                     blockList.Add(m_SquareBlocks[m_SquareIndex]);
                     m_SquareIndex = (m_SquareIndex + 1) % m_SquareBlocks.Length;
                     break;
-                case 7:     // 10% Å¸¿ø
-                    blockList.Add(m_CircleBlocks[m_CircleIndex]);
-                    m_CircleIndex = (m_CircleIndex + 1) % m_CircleBlocks.Length;
-                    break;
-                case 8:     // 10% ÁÂ»ï°¢Çü
+
+                case 7:      // 10% ÁÂ»ï°¢Çü
                     blockList.Add(m_LeftTriangleBlocks[m_LeftTriangleIndex]);
                     m_LeftTriangleIndex = (m_LeftTriangleIndex + 1) % m_LeftTriangleBlocks.Length;
                     break;
-                case 9:     // 10% ¿ì»ï°¢Çü
+
+                case 8:     // 10% ¿ì»ï°¢Çü
                     blockList.Add(m_RightTriangleBlocks[m_RightTriangleIndex]);
                     m_RightTriangleIndex = (m_RightTriangleIndex + 1) % m_RightTriangleBlocks.Length;
                     break;
+
+                case 9:     // 10% Å¸¿ø
+                    blockList.Add(m_EllipseBlocks[m_EllipseIndex]);
+                    m_EllipseIndex = (m_EllipseIndex + 1) % m_EllipseBlocks.Length;
+                    break;
+
                 default:
                     break;
             }
         }
         return blockList;
+    }
+
+    public Block GetBlock(Block.BlockType blockType)
+    {
+        Block block = null;
+        switch (blockType)
+        {
+            case Block.BlockType.Square:
+                block = m_SquareBlocks[m_SquareIndex];
+                m_SquareIndex = (m_SquareIndex + 1) % m_SquareBlocks.Length;
+                break;
+
+            case Block.BlockType.LeftTri:
+                block = m_LeftTriangleBlocks[m_LeftTriangleIndex];
+                m_LeftTriangleIndex = (m_LeftTriangleIndex + 1) % m_LeftTriangleBlocks.Length;
+                break;
+
+            case Block.BlockType.RightTri:
+                block = m_RightTriangleBlocks[m_RightTriangleIndex];
+                m_RightTriangleIndex = (m_RightTriangleIndex + 1) % m_RightTriangleBlocks.Length;
+                break;
+
+            case Block.BlockType.Ellipse:
+                block = m_EllipseBlocks[m_EllipseIndex];
+                m_EllipseIndex = (m_EllipseIndex + 1) % m_EllipseBlocks.Length;
+                break;
+        }
+        return block;
     }
 }

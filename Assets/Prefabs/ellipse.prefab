@@ -10,14 +10,14 @@ PrefabInstance:
     - target: {fileID: 2319627093556763675, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 73e57208fa4477945b3b6cd31c9bf10c, type: 3}
+      objectReference: {fileID: 21300000, guid: 12180861c4aa3e74c8b08a7063202d3f, type: 3}
     - target: {fileID: 4670926016328199425, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
       propertyPath: m_Name
-      value: left_triangle
+      value: ellipse
       objectReference: {fileID: 0}
     - target: {fileID: 4670926016328199429, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
       propertyPath: m_BlockType
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4670926016328199430, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
       propertyPath: m_RootOrder
@@ -66,7 +66,7 @@ PrefabInstance:
     - target: {fileID: 4670926016328199431, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 73e57208fa4477945b3b6cd31c9bf10c, type: 3}
+      objectReference: {fileID: 21300000, guid: 12180861c4aa3e74c8b08a7063202d3f, type: 3}
     m_RemovedComponents:
     - {fileID: 4670926016328199424, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e905713cbdefe364ba4b3c12d21f7506, type: 3}
@@ -100,7 +100,33 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.91, y: 0}
-      - {x: 0.91, y: 0.61}
-      - {x: -0.91, y: 0.61}
-      - {x: -0.91, y: -0.61}
+    - - {x: 0.83, y: -0.26}
+      - {x: 0.9, y: -0.13}
+      - {x: 0.91196823, y: -0.0013706684}
+      - {x: 0.9, y: 0.14999999}
+      - {x: 0.74, y: 0.37}
+      - {x: 0.59, y: 0.47}
+      - {x: 0.39999998, y: 0.53999996}
+      - {x: 0.29999998, y: 0.58}
+      - {x: 0.12, y: 0.59999996}
+      - {x: -0.004237175, y: 0.6095748}
+      - {x: -0.08, y: 0.59999996}
+      - {x: -0.25, y: 0.58}
+      - {x: -0.42999998, y: 0.53}
+      - {x: -0.61, y: 0.45999998}
+      - {x: -0.78, y: 0.32}
+      - {x: -0.9, y: 0.11}
+      - {x: -0.91196823, y: 0.0034153461}
+      - {x: -0.9, y: -0.089999996}
+      - {x: -0.85999995, y: -0.21}
+      - {x: -0.82, y: -0.26}
+      - {x: -0.71999997, y: -0.35999998}
+      - {x: -0.64, y: -0.42999998}
+      - {x: -0.51, y: -0.51}
+      - {x: -0.29999998, y: -0.58}
+      - {x: -0.16, y: -0.59999996}
+      - {x: -0.0018424988, y: -0.60957503}
+      - {x: 0.17999999, y: -0.59999996}
+      - {x: 0.41, y: -0.53999996}
+      - {x: 0.5, y: -0.51}
+      - {x: 0.68, y: -0.41}

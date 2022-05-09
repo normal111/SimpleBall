@@ -9,7 +9,7 @@ public class BallController : MonoBehaviour
     private WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
     private int m_RetrieveCount = 0;
 
-    public Vector2 m_LauchPosition;
+    public Vector2 m_ShootingPosition;
 
     public GameObject m_BallPrefab;
     public List<Rigidbody2D> m_BallList;
@@ -21,7 +21,7 @@ public class BallController : MonoBehaviour
 
     void Start()
     {
-        SetBallCountText(m_BallList.Count, m_LauchPosition);
+        SetBallCountText(m_BallList.Count, m_ShootingPosition);
     }
 
     // 모든 공 발사
@@ -29,8 +29,9 @@ public class BallController : MonoBehaviour
     {
         m_RetrieveCount = 0;
 
-        Vector3 initPos = m_LauchPosition;
+        Vector3 initPos = m_ShootingPosition;
 
+        // 공 발사
         for (int i = 0; i < m_BallList.Count; i++)
         {
             SetBallCountText(m_BallList.Count - i - 1, initPos);
@@ -40,12 +41,13 @@ public class BallController : MonoBehaviour
             yield return StartCoroutine(WaitFixedUpdate(3));
         }
 
+        // 공 수신 대기
         while (m_RetrieveCount < m_BallList.Count)
         {
             yield return null;
         }
 
-        SetBallCountText(m_BallList.Count, m_LauchPosition);
+        SetBallCountText(m_BallList.Count, m_ShootingPosition);
         callback?.Invoke();
     }
 
@@ -70,20 +72,20 @@ public class BallController : MonoBehaviour
         {
             if (m_MaxX < x)
             {
-                m_LauchPosition.x = m_MaxX;
+                m_ShootingPosition.x = m_MaxX;
             }
             else if (x < -m_MaxX)
             {
-                m_LauchPosition.x = -m_MaxX;
+                m_ShootingPosition.x = -m_MaxX;
             }
             else
             {
-                m_LauchPosition.x = x;
+                m_ShootingPosition.x = x;
             }
         }
         m_RetrieveCount++;
 
-        return m_LauchPosition;
+        return m_ShootingPosition;
     }
 
     // FixedUpdate 한프레임 기다림
@@ -100,11 +102,11 @@ public class BallController : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            GameObject ball = Instantiate(m_BallPrefab, m_LauchPosition, Quaternion.identity, this.transform);
+            GameObject ball = Instantiate(m_BallPrefab, m_ShootingPosition, Quaternion.identity, this.transform);
             ball.GetComponent<Ball>().m_BallController = this;
             m_BallList.Add(ball.GetComponent<Rigidbody2D>());
         }
-        SetBallCountText(m_BallList.Count, m_LauchPosition);
+        SetBallCountText(m_BallList.Count, m_ShootingPosition);
     }
 
     private void SetBallCountText(int count, Vector3 launchPosition)

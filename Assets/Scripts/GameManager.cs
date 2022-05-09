@@ -7,17 +7,40 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [Serializable]
+    private class BlockInfo
+    {
+        public Block.BlockType blockType;
+        public Vector2 position;
+        public int hp;
+        public int maxHP;
+    }
+    private class GameState
+    {
+        public bool isShoting;  // 발사 중 여부
+        public Vector2 shootPos;    // 발사 위치
+        public Vector2 shootDir;    // 발사 각도
+        public int currentScore;    // 현재 점수
+        public int currentBallCount;    // 현재 공 개수
+        public List<BlockInfo> blockList;   // 맵 블록의 각 모양과 남은 체력과 위치 정보를 가지는 리스트
+        public List<Vector2> newBallList;   // newball 위치 리스트
+    }
+
+    private readonly string GameStateKey = "GameState";
+    private readonly string MaxScoreKey = "MaxScore";
+
     private int m_Score;
     private int m_MaxScore;
     private bool m_IsTouching = false;
-    private bool m_IsLaunching;
+    private bool m_IsShooting;
     private List<NewBall> m_FalledNewBallList;
 
+    private Vector3 m_ShootDir;
     private Vector3 startingTouchPoint;
     private Vector3 currentTouchPoint;
     private Vector3 TouchPointOffset;
     private Vector3 arrowAngle = Vector3.zero;
-    private List<GameObject> m_MapBlockList;
+    private List<Block> m_MapBlockList;
     private List<GameObject> m_MapNewBallList;
 
     public BallController m_BallController;
@@ -39,27 +62,109 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         m_GameOverPanel.SetActive(false);
+        m_TouchLineRenderer.gameObject.SetActive(false);
 
         m_FalledNewBallList = new List<NewBall>();
-        m_TouchLineRenderer.gameObject.SetActive(false);
-        // 이전 기록 불러오기
-        m_MaxScore = 5;
-        // 이전 맵 정보, 점수, 발사 지점, 공 개수, 발사 여부 및 발사 각도
-        m_MapBlockList = new List<GameObject>();
+        m_MapBlockList = new List<Block>();
         m_MapNewBallList = new List<GameObject>();
-        m_BallController.AddBall(1);
 
-        m_IsLaunching = true;
-        SetScore(0);
-        StartCoroutine(FinishRound());
+        // 이전 기록 불러오기
+        if (PlayerPrefs.HasKey(MaxScoreKey))
+        {
+            m_MaxScore = PlayerPrefs.GetInt(MaxScoreKey);
+        }
+        else
+        {
+            m_MaxScore = 0;
+        }
+
+        // 이전 맵 정보, 점수, 발사 지점, 공 개수, 발사 여부 및 발사 각도
+        if (PlayerPrefs.HasKey(GameStateKey))
+        {
+            string gameStateJson = PlayerPrefs.GetString(GameStateKey);
+            LoadGame(JsonUtility.FromJson<GameState>(gameStateJson));
+        }
+        else
+        {
+            m_BallController.AddBall(1);
+            SetScore(0);
+            StartCoroutine(FinishRound());
+        }
+    }
+
+    // 진행 중인 게임상태 저장
+    private void SaveGame()
+    {
+        GameState gameState = new GameState
+        {
+            isShoting = m_IsShooting,
+            shootDir = m_ShootDir,
+            shootPos = m_BallController.m_ShootingPosition,
+            currentScore = m_Score,
+            currentBallCount = m_BallController.m_BallList.Count,
+            blockList = new List<BlockInfo>(),
+            newBallList = new List<Vector2>()
+        };
+
+        for (int i = 0; i < m_MapBlockList.Count; i++)
+        {
+            BlockInfo blockInfo = new BlockInfo
+            {
+                hp = m_MapBlockList[i].m_HP,
+                maxHP = m_MapBlockList[i].m_MaxHP,
+                blockType = m_MapBlockList[i].m_BlockType,
+                position = m_MapBlockList[i].transform.position
+            };
+            gameState.blockList.Add(blockInfo);
+        }
+
+        for (int i = 0; i < m_MapNewBallList.Count; i++)
+        {
+            gameState.newBallList.Add(m_MapNewBallList[i].transform.position);
+        }
+
+        PlayerPrefs.SetString(GameStateKey, JsonUtility.ToJson(gameState));
+        PlayerPrefs.Save();
+    }
+
+    // 진행 중이던 게임 불러오기
+    private void LoadGame(GameState gameState)
+    {
+        // 블록 배치
+        for (int i = 0; i < gameState.blockList.Count; i++)
+        {
+            Block block = m_BlockPoolingManager.GetBlock(gameState.blockList[i].blockType);
+            block.SetMaxHP(gameState.blockList[i].maxHP);
+            block.SetHP(gameState.blockList[i].hp);
+            block.transform.position = gameState.blockList[i].position;
+            block.gameObject.SetActive(true);
+            m_MapBlockList.Add(block);
+        }
+
+        // new ball 배치
+        for (int i = 0; i < gameState.newBallList.Count; i++)
+        {
+            m_MapNewBallList.Add(m_NewBallPoolingManager.SetNewBall(gameState.newBallList[i]));
+        }
+
+        m_BallController.m_ShootingPosition = gameState.shootPos;
+        m_BallController.AddBall(gameState.currentBallCount);
+        SetScore(gameState.currentScore);
+
+        m_IsShooting = gameState.isShoting;
+        if (m_IsShooting)
+        {
+            StartCoroutine(m_BallController.LaunchAllBall(gameState.shootDir, () => StartCoroutine(FinishRound())));
+        }
     }
 
     // 터치 감지
     void Update()
     {
-        if (m_IsLaunching)
+        if (m_IsShooting)
             return;
 
+        // 조준 시작
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             startingTouchPoint = Input.mousePosition;
@@ -67,6 +172,7 @@ public class GameManager : MonoBehaviour
             m_IsTouching = true;
         }
 
+        // 조준 중
         if (m_IsTouching)
         {
             currentTouchPoint = Input.mousePosition;
@@ -100,20 +206,26 @@ public class GameManager : MonoBehaviour
             // 공 방향 화살표
             arrowAngle.z = angle;
             m_Arrow.eulerAngles = arrowAngle;
-            m_Arrow.position = m_BallController.m_LauchPosition;
+            m_Arrow.position = m_BallController.m_ShootingPosition;
 
             // 공 궤적
-            m_ExpectBall.position = Physics2D.CircleCast(m_BallController.m_LauchPosition, 0.25f, TouchPointOffset.normalized, 100, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("Block")).centroid;
-            m_TrajectoryLineRenderer.SetPosition(0, m_BallController.m_LauchPosition);
+            m_ExpectBall.position = Physics2D.CircleCast(m_BallController.m_ShootingPosition, 0.25f, TouchPointOffset.normalized, 100, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("Block")).centroid;
+            m_TrajectoryLineRenderer.SetPosition(0, m_BallController.m_ShootingPosition);
             m_TrajectoryLineRenderer.SetPosition(1, m_ExpectBall.position);
         }
 
+        // 발사
         if (m_IsTouching && Input.GetKeyUp(KeyCode.Mouse0))
         {
             m_TouchLineRenderer.gameObject.SetActive(false);
             m_IsTouching = false;
-            m_IsLaunching = true;
-            StartCoroutine(m_BallController.LaunchAllBall(TouchPointOffset.normalized, () => StartCoroutine(FinishRound())));
+            m_IsShooting = true;
+
+            m_ShootDir = TouchPointOffset.normalized;
+
+            SaveGame();     // 게임 저장
+
+            StartCoroutine(m_BallController.LaunchAllBall(m_ShootDir, () => StartCoroutine(FinishRound())));
         }
     }
 
@@ -123,7 +235,7 @@ public class GameManager : MonoBehaviour
         yield return null;
         // 다음 블럭 생성
         SetScore(m_Score + 1);
-        List<GameObject> blockList = m_BlockPoolingManager.GetBlocks(GetBlockCount(m_Score));
+        List<Block> blockList = m_BlockPoolingManager.GetBlocks(GetBlockCount(m_Score));
         SetBlocks(blockList, m_Score);
         m_MapBlockList.AddRange(blockList);
 
@@ -139,6 +251,9 @@ public class GameManager : MonoBehaviour
             m_CameraAnimator.SetTrigger("Shake");
             m_GameOverPanel.SetActive(true);
             m_ResultScoreText.text = "최종 점수: " + m_Score;
+            PlayerPrefs.SetInt(MaxScoreKey, m_MaxScore);
+            PlayerPrefs.DeleteKey(GameStateKey);
+            PlayerPrefs.Save();
             yield break;
         }
 
@@ -148,7 +263,9 @@ public class GameManager : MonoBehaviour
         // 바닥에 떨어진 NewBall 회수
         yield return StartCoroutine(RetrieveNewBall());
 
-        m_IsLaunching = false;
+        m_IsShooting = false;
+
+        SaveGame();     // 게임 저장
     }
 
     // 점수 수정 및 텍스트 수정
@@ -166,7 +283,7 @@ public class GameManager : MonoBehaviour
 
     #region 블럭 배치
     // 블럭을 생성 위치에 배치
-    private void SetBlocks(List<GameObject> blockList, int score)
+    private void SetBlocks(List<Block> blockList, int score)
     {
         List<int> indexList = Enumerable.Range(0, m_BlockPoints.Length).ToList();
         for (int i = 0; i < blockList.Count; i++)
@@ -174,8 +291,9 @@ public class GameManager : MonoBehaviour
             int index = UnityEngine.Random.Range(0, indexList.Count);
             blockList[i].transform.position = m_BlockPoints[indexList[index]].position;
             indexList.RemoveAt(index);
-            blockList[i].GetComponent<Block>().SetHP(score);
-            blockList[i].SetActive(true);
+            blockList[i].SetMaxHP(score);
+            blockList[i].SetHP(score);
+            blockList[i].gameObject.SetActive(true);
         }
     }
 
@@ -209,13 +327,13 @@ public class GameManager : MonoBehaviour
 
     #region 맵 내리기
     // 맵 전체를 내리기
-    private IEnumerator LowerMap(List<GameObject> mapBlockList, List<GameObject> mapNewBallList)
+    private IEnumerator LowerMap(List<Block> mapBlockList, List<GameObject> mapNewBallList)
     {
         float lowerTime = 0.25f;
 
         for (int i = 0; i < mapBlockList.Count; i++)
         {
-            if (mapBlockList[i].activeSelf == false)
+            if (mapBlockList[i].gameObject.activeSelf == false)
             {
                 mapBlockList.RemoveAt(i);
                 i--;
@@ -255,7 +373,7 @@ public class GameManager : MonoBehaviour
         transform.position = target;
     }
 
-    private bool CheckGameOver(List<GameObject> mapBlockList, float minHeight)
+    private bool CheckGameOver(List<Block> mapBlockList, float minHeight)
     {
         for (int i = 0; i < mapBlockList.Count; i++)
         {
@@ -307,7 +425,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < m_FalledNewBallList.Count; i++)
         {
-            StartCoroutine(GatherNewball(m_FalledNewBallList[i].transform, m_BallController.m_LauchPosition));
+            StartCoroutine(GatherNewball(m_FalledNewBallList[i].transform, m_BallController.m_ShootingPosition));
         }
         yield return new WaitForSeconds(0.25f);
         m_BallController.AddBall(m_FalledNewBallList.Count);
@@ -334,4 +452,5 @@ public class GameManager : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
+
 }
