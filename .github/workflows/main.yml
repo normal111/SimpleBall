@@ -25,6 +25,7 @@ jobs:
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
+          versioning: Tag
           targetPlatform: ${{ matrix.targetPlatform }}
           androidAppBundle: true
           androidKeystoreName: user.keystore
