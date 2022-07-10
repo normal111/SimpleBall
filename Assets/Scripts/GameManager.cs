@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +17,13 @@ public class GameManager : MonoBehaviour
     }
     private class GameState
     {
-        public bool isShoting;  // ¹ß»ç Áß ¿©ºÎ
-        public Vector2 shootPos;    // ¹ß»ç À§Ä¡
-        public Vector2 shootDir;    // ¹ß»ç °¢µµ
-        public int currentScore;    // ÇöÀç Á¡¼ö
-        public int currentBallCount;    // ÇöÀç °ø °³¼ö
-        public List<BlockInfo> blockList;   // ¸Ê ºí·ÏÀÇ °¢ ¸ğ¾ç°ú ³²Àº Ã¼·Â°ú À§Ä¡ Á¤º¸¸¦ °¡Áö´Â ¸®½ºÆ®
-        public List<Vector2> newBallList;   // newball À§Ä¡ ¸®½ºÆ®
+        public bool isShoting;  // ë°œì‚¬ ì¤‘ ì—¬ë¶€
+        public Vector2 shootPos;    // ë°œì‚¬ ìœ„ì¹˜
+        public Vector2 shootDir;    // ë°œì‚¬ ê°ë„
+        public int currentScore;    // í˜„ì¬ ì ìˆ˜
+        public int currentBallCount;    // í˜„ì¬ ê³µ ê°œìˆ˜
+        public List<BlockInfo> blockList;   // ë§µ ë¸”ë¡ì˜ ê° ëª¨ì–‘ê³¼ ë‚¨ì€ ì²´ë ¥ê³¼ ìœ„ì¹˜ ì •ë³´ë¥¼ ê°€ì§€ëŠ” ë¦¬ìŠ¤íŠ¸
+        public List<Vector2> newBallList;   // newball ìœ„ì¹˜ ë¦¬ìŠ¤íŠ¸
     }
 
     private readonly string GameStateKey = "GameState";
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
         m_MapBlockList = new List<Block>();
         m_MapNewBallList = new List<GameObject>();
 
-        // ÀÌÀü ±â·Ï ºÒ·¯¿À±â
+        // ì´ì „ ê¸°ë¡ ë¶ˆëŸ¬ì˜¤ê¸°
         if (PlayerPrefs.HasKey(MaxScoreKey))
         {
             m_MaxScore = PlayerPrefs.GetInt(MaxScoreKey);
@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
             m_MaxScore = 0;
         }
 
-        // ÀÌÀü ¸Ê Á¤º¸, Á¡¼ö, ¹ß»ç ÁöÁ¡, °ø °³¼ö, ¹ß»ç ¿©ºÎ ¹× ¹ß»ç °¢µµ
+        // ì´ì „ ë§µ ì •ë³´, ì ìˆ˜, ë°œì‚¬ ì§€ì , ê³µ ê°œìˆ˜, ë°œì‚¬ ì—¬ë¶€ ë° ë°œì‚¬ ê°ë„
         if (PlayerPrefs.HasKey(GameStateKey))
         {
             string gameStateJson = PlayerPrefs.GetString(GameStateKey);
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ÁøÇà ÁßÀÎ °ÔÀÓ»óÅÂ ÀúÀå
+    // ì§„í–‰ ì¤‘ì¸ ê²Œì„ìƒíƒœ ì €ì¥
     private void SaveGame()
     {
         GameState gameState = new GameState
@@ -127,10 +127,10 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    // ÁøÇà ÁßÀÌ´ø °ÔÀÓ ºÒ·¯¿À±â
+    // ì§„í–‰ ì¤‘ì´ë˜ ê²Œì„ ë¶ˆëŸ¬ì˜¤ê¸°
     private void LoadGame(GameState gameState)
     {
-        // ºí·Ï ¹èÄ¡
+        // ë¸”ë¡ ë°°ì¹˜
         for (int i = 0; i < gameState.blockList.Count; i++)
         {
             Block block = m_BlockPoolingManager.GetBlock(gameState.blockList[i].blockType);
@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
             m_MapBlockList.Add(block);
         }
 
-        // new ball ¹èÄ¡
+        // new ball ë°°ì¹˜
         for (int i = 0; i < gameState.newBallList.Count; i++)
         {
             m_MapNewBallList.Add(m_NewBallPoolingManager.SetNewBall(gameState.newBallList[i]));
@@ -158,43 +158,43 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ÅÍÄ¡ °¨Áö
+    // í„°ì¹˜ ê°ì§€
     void Update()
     {
         if (m_IsShooting)
             return;
 
-        // Á¶ÁØ ½ÃÀÛ
+        // ì¡°ì¤€ ì‹œì‘
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             startingTouchPoint = Input.mousePosition;
-            startingTouchPoint.z = 10f;     // Ä«¸Ş¶ó z offset
+            startingTouchPoint.z = 10f;     // ì¹´ë©”ë¼ z offset
             m_IsTouching = true;
         }
 
-        // Á¶ÁØ Áß
+        // ì¡°ì¤€ ì¤‘
         if (m_IsTouching)
         {
             currentTouchPoint = Input.mousePosition;
-            currentTouchPoint.z = 10f;      // Ä«¸Ş¶ó z offset
+            currentTouchPoint.z = 10f;      // ì¹´ë©”ë¼ z offset
 
-            if (Vector2.Distance(currentTouchPoint, startingTouchPoint) < 10f)  // ¹Ì¼¼ÇÑ ¿òÁ÷ÀÓÀº ¹«½Ã
+            if (Vector2.Distance(currentTouchPoint, startingTouchPoint) < 10f)  // ë¯¸ì„¸í•œ ì›€ì§ì„ì€ ë¬´ì‹œ
                 return;
 
-            m_TouchLineRenderer.gameObject.SetActive(true);     // ÅÍÄ¡ Áß ³ªÅ¸³ª´Â ¿ÀºêÁ§ÅÍ ÄÑ±â
+            m_TouchLineRenderer.gameObject.SetActive(true);     // í„°ì¹˜ ì¤‘ ë‚˜íƒ€ë‚˜ëŠ” ì˜¤ë¸Œì í„° ì¼œê¸°
 
             TouchPointOffset = currentTouchPoint - startingTouchPoint;
             float angle = Mathf.Atan2(TouchPointOffset.y, TouchPointOffset.x) * Mathf.Rad2Deg;
 
-            // ÅÍÄ¡ ¶óÀÎ
+            // í„°ì¹˜ ë¼ì¸
             m_TouchLineRenderer.SetPosition(0, Camera.main.ScreenToWorldPoint(startingTouchPoint));
             m_TouchLineRenderer.SetPosition(1, Camera.main.ScreenToWorldPoint(currentTouchPoint));
 
-            if (170f < angle || angle < -90f)   // »óÇÑ °¢µµ
+            if (170f < angle || angle < -90f)   // ìƒí•œ ê°ë„
             {
                 angle = 170f;
             }
-            else if (angle < 10f)               // ÇÏÇÑ °¢µµ
+            else if (angle < 10f)               // í•˜í•œ ê°ë„
             {
                 angle = 10f;
             }
@@ -203,18 +203,18 @@ public class GameManager : MonoBehaviour
             TouchPointOffset.x = TouchPointOffsetX;
             TouchPointOffset.y = 1f;
 
-            // °ø ¹æÇâ È­»ìÇ¥
+            // ê³µ ë°©í–¥ í™”ì‚´í‘œ
             arrowAngle.z = angle;
             m_Arrow.eulerAngles = arrowAngle;
             m_Arrow.position = m_BallController.m_ShootingPosition;
 
-            // °ø ±ËÀû
+            // ê³µ ê¶¤ì 
             m_ExpectBall.position = Physics2D.CircleCast(m_BallController.m_ShootingPosition, 0.25f, TouchPointOffset.normalized, 100, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("Block")).centroid;
             m_TrajectoryLineRenderer.SetPosition(0, m_BallController.m_ShootingPosition);
             m_TrajectoryLineRenderer.SetPosition(1, m_ExpectBall.position);
         }
 
-        // ¹ß»ç
+        // ë°œì‚¬
         if (m_IsTouching && Input.GetKeyUp(KeyCode.Mouse0))
         {
             m_TouchLineRenderer.gameObject.SetActive(false);
@@ -223,66 +223,66 @@ public class GameManager : MonoBehaviour
 
             m_ShootDir = TouchPointOffset.normalized;
 
-            SaveGame();     // °ÔÀÓ ÀúÀå
+            SaveGame();     // ê²Œì„ ì €ì¥
 
             StartCoroutine(m_BallController.LaunchAllBall(m_ShootDir, () => StartCoroutine(FinishRound())));
         }
     }
 
-    // ¶ó¿îµå Á¾·á ÀÛ¾÷
+    // ë¼ìš´ë“œ ì¢…ë£Œ ì‘ì—…
     private IEnumerator FinishRound()
     {
         yield return null;
-        // ´ÙÀ½ ºí·° »ı¼º
+        // ë‹¤ìŒ ë¸”ëŸ­ ìƒì„±
         SetScore(m_Score + 1);
         List<Block> blockList = m_BlockPoolingManager.GetBlocks(GetBlockCount(m_Score));
         SetBlocks(blockList, m_Score);
         m_MapBlockList.AddRange(blockList);
 
-        // ÃÊ·Ï °ø »ı¼º
+        // ì´ˆë¡ ê³µ ìƒì„±
         m_MapNewBallList.Add(m_NewBallPoolingManager.SetNewBall(GetRandomPoint()));
 
-        // ¸ğµç ºí·° ³»¸®±â
+        // ëª¨ë“  ë¸”ëŸ­ ë‚´ë¦¬ê¸°
         yield return StartCoroutine(LowerMap(m_MapBlockList, m_MapNewBallList));
 
-        // °ÔÀÓ Á¾·á °Ë»ç
+        // ê²Œì„ ì¢…ë£Œ ê²€ì‚¬
         if (CheckGameOver(m_MapBlockList, m_FloorLevelHeight))
         {
             m_CameraAnimator.SetTrigger("Shake");
             m_GameOverPanel.SetActive(true);
-            m_ResultScoreText.text = "ÃÖÁ¾ Á¡¼ö: " + m_Score;
+            m_ResultScoreText.text = UTF8Converter.GetUTF8String("ìµœì¢… ì ìˆ˜: ") + m_Score;
             PlayerPrefs.SetInt(MaxScoreKey, m_MaxScore);
             PlayerPrefs.DeleteKey(GameStateKey);
             PlayerPrefs.Save();
             yield break;
         }
 
-        // ¹Ù´Ú ±ÙÃ³±îÁö ³»·Á¿Â NewBall È¸¼ö
+        // ë°”ë‹¥ ê·¼ì²˜ê¹Œì§€ ë‚´ë ¤ì˜¨ NewBall íšŒìˆ˜
         yield return StartCoroutine(CheckNewBall(m_MapNewBallList, m_FloorLevelHeight));
 
-        // ¹Ù´Ú¿¡ ¶³¾îÁø NewBall È¸¼ö
+        // ë°”ë‹¥ì— ë–¨ì–´ì§„ NewBall íšŒìˆ˜
         yield return StartCoroutine(RetrieveNewBall());
 
         m_IsShooting = false;
 
-        SaveGame();     // °ÔÀÓ ÀúÀå
+        SaveGame();     // ê²Œì„ ì €ì¥
     }
 
-    // Á¡¼ö ¼öÁ¤ ¹× ÅØ½ºÆ® ¼öÁ¤
+    // ì ìˆ˜ ìˆ˜ì • ë° í…ìŠ¤íŠ¸ ìˆ˜ì •
     private void SetScore(int newScore)
     {
         m_Score = newScore;
-        m_ScoreText.text = "ÇöÀç Á¡¼ö: " + m_Score;
+        m_ScoreText.text = "í˜„ì¬ ì ìˆ˜: " + m_Score;
 
         if (m_MaxScore < m_Score)
         {
             m_MaxScore = m_Score;
         }
-        m_MaxScoreText.text = "ÃÖ°í Á¡¼ö: " + m_MaxScore;
+        m_MaxScoreText.text = UTF8Converter.GetUTF8String("ìµœê³  ì ìˆ˜: ") + m_MaxScore;
     }
 
-    #region ºí·° ¹èÄ¡
-    // ºí·°À» »ı¼º À§Ä¡¿¡ ¹èÄ¡
+    #region ë¸”ëŸ­ ë°°ì¹˜
+    // ë¸”ëŸ­ì„ ìƒì„± ìœ„ì¹˜ì— ë°°ì¹˜
     private void SetBlocks(List<Block> blockList, int score)
     {
         List<int> indexList = Enumerable.Range(0, m_BlockPoints.Length).ToList();
@@ -297,7 +297,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Á¡¼ö¿¡ µû¸¥ »ı¼º ºí·°¼ö ÁöÁ¤
+    // ì ìˆ˜ì— ë”°ë¥¸ ìƒì„± ë¸”ëŸ­ìˆ˜ ì§€ì •
     private int GetBlockCount(int score)
     {
         int count;
@@ -317,7 +317,7 @@ public class GameManager : MonoBehaviour
         return count;
     }
 
-    // ¹«ÀÛÀ§ ºí·° »ı¼º À§Ä¡ ¾ò±â
+    // ë¬´ì‘ìœ„ ë¸”ëŸ­ ìƒì„± ìœ„ì¹˜ ì–»ê¸°
     private Vector2 GetRandomPoint()
     {
         int index = UnityEngine.Random.Range(0, m_BlockPoints.Length);
@@ -325,8 +325,8 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    #region ¸Ê ³»¸®±â
-    // ¸Ê ÀüÃ¼¸¦ ³»¸®±â
+    #region ë§µ ë‚´ë¦¬ê¸°
+    // ë§µ ì „ì²´ë¥¼ ë‚´ë¦¬ê¸°
     private IEnumerator LowerMap(List<Block> mapBlockList, List<GameObject> mapNewBallList)
     {
         float lowerTime = 0.25f;
@@ -357,7 +357,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(lowerTime);
     }
 
-    // ¿ÀºêÁ§Æ® ³»¸®±â
+    // ì˜¤ë¸Œì íŠ¸ ë‚´ë¦¬ê¸°
     private IEnumerator LowerObject(Transform transform, float distance, float duration)
     {
         Vector2 origin = transform.position;
@@ -387,7 +387,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region NewBall
-    // È¹µæÇÑ NewBall ¸®½ºÆ®¿¡ Ãß°¡
+    // íšë“í•œ NewBall ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
     public void AddFalledNewBall(NewBall newBall)
     {
         if (m_MapNewBallList.Contains(newBall.gameObject))
@@ -401,7 +401,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // NewBall ¹Ù´Ú ±ÙÃ³ÀÎÁö °Ë»ç
+    // NewBall ë°”ë‹¥ ê·¼ì²˜ì¸ì§€ ê²€ì‚¬
     private IEnumerator CheckNewBall(List<GameObject> mapNewBallList, float height)
     {
         for (int i = 0; i < mapNewBallList.Count; i++)
@@ -415,7 +415,7 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
-    // ÀÌ¹ø ¶ó¿îµå È¹µæÇÑ NewBall È¸¼ö
+    // ì´ë²ˆ ë¼ìš´ë“œ íšë“í•œ NewBall íšŒìˆ˜
     private IEnumerator RetrieveNewBall()
     {
         if (m_FalledNewBallList.Count == 0)
@@ -432,7 +432,7 @@ public class GameManager : MonoBehaviour
         m_FalledNewBallList.Clear();
     }
 
-    // ¶³¾îÁø NewBallÀ» ¹ß»ç À§Ä¡·Î ÀÌµ¿
+    // ë–¨ì–´ì§„ NewBallì„ ë°œì‚¬ ìœ„ì¹˜ë¡œ ì´ë™
     private IEnumerator GatherNewball(Transform transform, Vector2 target)
     {
         Vector2 origin = transform.position;
