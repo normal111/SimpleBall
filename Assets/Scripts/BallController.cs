@@ -24,14 +24,14 @@ public class BallController : MonoBehaviour
         SetBallCountText(m_BallList.Count, m_ShootingPosition);
     }
 
-    // ¸ðµç °ø ¹ß»ç
+    // ëª¨ë“  ê³µ ë°œì‚¬
     public IEnumerator LaunchAllBall(Vector3 direction, Action callback)
     {
         m_RetrieveCount = 0;
 
         Vector3 initPos = m_ShootingPosition;
 
-        // °ø ¹ß»ç
+        // ê³µ ë°œì‚¬
         for (int i = 0; i < m_BallList.Count; i++)
         {
             SetBallCountText(m_BallList.Count - i - 1, initPos);
@@ -41,7 +41,7 @@ public class BallController : MonoBehaviour
             yield return StartCoroutine(WaitFixedUpdate(3));
         }
 
-        // °ø ¼ö½Å ´ë±â
+        // ê³µ ìˆ˜ì‹  ëŒ€ê¸°
         while (m_RetrieveCount < m_BallList.Count)
         {
             yield return null;
@@ -51,7 +51,7 @@ public class BallController : MonoBehaviour
         callback?.Invoke();
     }
 
-    // °ø ¼öÆò ÀÌµ¿ °Ë»ç
+    // ê³µ ìˆ˜í‰ ì´ë™ ê²€ì‚¬
     private IEnumerator CheckHorizontal(Rigidbody2D rigidbody2D)
     {
         yield return new WaitForSeconds(1f);
@@ -65,10 +65,10 @@ public class BallController : MonoBehaviour
         }
     }
 
-    // ¹ß»çÇÑ °ø ¹Ù´Ú¿¡ µµÂø
+    // ë°œì‚¬í•œ ê³µ ë°”ë‹¥ì— ë„ì°©
     public Vector2 RetrieveBall(float x)
     {
-        if (m_RetrieveCount == 0)   // Ã³À½À¸·Î ¶³¾îÁø °øÀÇ À§Ä¡ ÁöÁ¤
+        if (m_RetrieveCount == 0)   // ì²˜ìŒìœ¼ë¡œ ë–¨ì–´ì§„ ê³µì˜ ìœ„ì¹˜ ì§€ì •
         {
             if (m_MaxX < x)
             {
@@ -88,7 +88,7 @@ public class BallController : MonoBehaviour
         return m_ShootingPosition;
     }
 
-    // FixedUpdate ÇÑÇÁ·¹ÀÓ ±â´Ù¸²
+    // FixedUpdate í•œí”„ë ˆìž„ ê¸°ë‹¤ë¦¼
     private IEnumerator WaitFixedUpdate(int count)
     {
         for (int i = 0; i < count; i++)
@@ -97,7 +97,7 @@ public class BallController : MonoBehaviour
         }
     }
 
-    // °ø Ãß°¡
+    // ê³µ ì¶”ê°€
     public void AddBall(int count)
     {
         for (int i = 0; i < count; i++)

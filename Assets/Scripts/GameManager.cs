@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -250,7 +250,7 @@ public class GameManager : MonoBehaviour
         {
             m_CameraAnimator.SetTrigger("Shake");
             m_GameOverPanel.SetActive(true);
-            m_ResultScoreText.text = UTF8Converter.GetUTF8String("최종 점수: ") + m_Score;
+            m_ResultScoreText.text = "최종 점수: " + m_Score;
             PlayerPrefs.SetInt(MaxScoreKey, m_MaxScore);
             PlayerPrefs.DeleteKey(GameStateKey);
             PlayerPrefs.Save();
@@ -278,7 +278,7 @@ public class GameManager : MonoBehaviour
         {
             m_MaxScore = m_Score;
         }
-        m_MaxScoreText.text = UTF8Converter.GetUTF8String("최고 점수: ") + m_MaxScore;
+        m_MaxScoreText.text = "최고 점수: " + m_MaxScore;
     }
 
     #region 블럭 배치

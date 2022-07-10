@@ -34,7 +34,7 @@ public class NewBall : MonoBehaviour
         StartCoroutine(MoveTo(new Vector2(this.transform.position.x, m_GameManager.m_BallController.m_ShootingPosition.y)));
     }
 
-    // ¹Ù´Ú¿¡ ¶³¾îÁö±â
+    // ë°”ë‹¥ì— ë–¨ì–´ì§€ê¸°
     private IEnumerator MoveTo(Vector2 target)
     {
         Vector2 origin = this.transform.position;

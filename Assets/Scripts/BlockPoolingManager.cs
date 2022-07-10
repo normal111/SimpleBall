@@ -49,7 +49,7 @@ public class BlockPoolingManager : MonoBehaviour
             int seed = Random.Range(0, 10);
             switch (seed)
             {
-                case 0:     // 70% »ç°¢Çü
+                case 0:     // 70% ì‚¬ê°í˜•
                 case 1:
                 case 2:
                 case 3:
@@ -60,17 +60,17 @@ public class BlockPoolingManager : MonoBehaviour
                     m_SquareIndex = (m_SquareIndex + 1) % m_SquareBlocks.Length;
                     break;
 
-                case 7:      // 10% ÁÂ»ï°¢Çü
+                case 7:      // 10% ì¢Œì‚¼ê°í˜•
                     blockList.Add(m_LeftTriangleBlocks[m_LeftTriangleIndex]);
                     m_LeftTriangleIndex = (m_LeftTriangleIndex + 1) % m_LeftTriangleBlocks.Length;
                     break;
 
-                case 8:     // 10% ¿ì»ï°¢Çü
+                case 8:     // 10% ìš°ì‚¼ê°í˜•
                     blockList.Add(m_RightTriangleBlocks[m_RightTriangleIndex]);
                     m_RightTriangleIndex = (m_RightTriangleIndex + 1) % m_RightTriangleBlocks.Length;
                     break;
 
-                case 9:     // 10% Å¸¿ø
+                case 9:     // 10% íƒ€ì›
                     blockList.Add(m_EllipseBlocks[m_EllipseIndex]);
                     m_EllipseIndex = (m_EllipseIndex + 1) % m_EllipseBlocks.Length;
                     break;
