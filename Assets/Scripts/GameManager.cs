@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,14 +50,14 @@ public class GameManager : MonoBehaviour
     public LineRenderer m_TrajectoryLineRenderer;
     public Transform m_Arrow;
     public Transform m_ExpectBall;
-    public TextMeshProUGUI m_ScoreText;
-    public TextMeshProUGUI m_MaxScoreText;
+    public Text m_ScoreText;
+    public Text m_MaxScoreText;
     public Transform[] m_BlockPoints;
     public float m_FloorLevelHeight = -5f;
     public float m_OneLevelHeight = 1.2f;
     public GameObject m_GameOverPanel;
     public Animator m_CameraAnimator;
-    public TextMeshProUGUI m_ResultScoreText;
+    public Text m_ResultScoreText;
 
     private void Awake()
     {

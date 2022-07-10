@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +14,7 @@ public class BallController : MonoBehaviour
     public GameObject m_BallPrefab;
     public List<Rigidbody2D> m_BallList;
     public float m_MaxX;
-    public TextMeshProUGUI m_BallCountText;
+    public Text m_BallCountText;
     public Vector3 m_TextPosOffset = new Vector3(0, -1);
     public float m_BallSpeed = 800f;
     public float m_MinYVelocity = 0.2f;
